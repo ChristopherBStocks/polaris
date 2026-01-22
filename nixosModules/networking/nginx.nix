@@ -445,13 +445,14 @@ in
             else cfg.acmeCredentialsFile;
           dnsHosts = filterAttrs (n: v: (getProvider v) != null) cfg.hosts;
         in
-          mapAttrs' (domain: hostCfg: nameValuePair (mkCertName domain) {
-            domain = domain;
-            extraDomainNames = hostCfg.serverAliases;
-            dnsProvider = getProvider hostCfg;
-            credentialsFile = getCreds hostCfg;
-            group = "nginx";
-          })
+          mapAttrs' (domain: hostCfg:
+            nameValuePair (mkCertName domain) {
+              domain = domain;
+              extraDomainNames = hostCfg.serverAliases;
+              dnsProvider = getProvider hostCfg;
+              credentialsFile = getCreds hostCfg;
+              group = "nginx";
+            })
           dnsHosts;
       };
 

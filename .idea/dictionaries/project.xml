@@ -2,27 +2,42 @@
   <dictionary name="project">
     <words>
       <w>Cloudflared</w>
+      <w>Direnv</w>
       <w>Rhosts</w>
       <w>capi</w>
       <w>clamav</w>
       <w>cloudflared</w>
       <w>crowdsec</w>
+      <w>gitconfig</w>
+      <w>homemanager</w>
       <w>incusbr</w>
       <w>iptable</w>
       <w>lapi</w>
+      <w>libsecret</w>
+      <w>lutris</w>
       <w>modsecurity</w>
       <w>netbird</w>
       <w>networkmanager</w>
       <w>nftables</w>
       <w>nosniff</w>
       <w>numtide</w>
+      <w>oxalica</w>
       <w>pipewire</w>
       <w>pkgs</w>
       <w>postrouting</w>
+      <w>prismlauncher</w>
       <w>pyrodactyl</w>
+      <w>remmina</w>
+      <w>rpath</w>
       <w>rtkit</w>
+      <w>rustflags</w>
+      <w>rustfmt</w>
+      <w>sccache</w>
       <w>sshkeys</w>
+      <w>tokei</w>
+      <w>vesktop</w>
       <w>virtualisation</w>
+      <w>wincred</w>
     </words>
   </dictionary>
 </component>
