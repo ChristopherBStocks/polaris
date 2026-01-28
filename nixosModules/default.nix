@@ -1,6 +1,7 @@
 {
   lib,
   polarisRoot,
+  polarisInputs,
   ...
 }: let
   discoverAbsoluteModulePaths = dir:
@@ -17,4 +18,5 @@
   allPolarisModulePaths = discoverAbsoluteModulePaths (polarisRoot + "/nixosModules");
 in {
   imports = allPolarisModulePaths;
+  _module.args = {inherit polarisInputs;};
 }
