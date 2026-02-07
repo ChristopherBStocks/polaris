@@ -155,14 +155,17 @@
       ++ (lib.optional (csp.workerSrc != null) "worker-src ${csp.workerSrc}")
     )
     + ";";
-  mkSecurityHeaders = csp: frame: contentType: ''
+  mkSecurityHeaders = csp: frame: contentType: coep: corp: coop: ''
     add_header Strict-Transport-Security "max-age=63072000; includeSubDomains; preload" always;
     add_header Content-Security-Policy "${csp}" always;
     add_header Permissions-Policy "geolocation=(),midi=(),sync-xhr=(),microphone=(),camera=(self),magnetometer=(),gyroscope=(),fullscreen=(),payment=()";
     add_header Referrer-Policy 'strict-origin-when-cross-origin';
-    add_header Cross-Origin-Opener-Policy same-origin;
-    add_header Cross-Origin-Resource-Policy same-origin;
-    add_header Cross-Origin-Embedder-Policy require-corp;
+
+    # Dynamic Headers
+    add_header Cross-Origin-Opener-Policy "${coop}" always;
+    add_header Cross-Origin-Resource-Policy "${corp}" always;
+    ${lib.optionalString coep "add_header Cross-Origin-Embedder-Policy require-corp always;"}
+
     add_header X-XSS-Protection '1; mode=block';
     add_header Alt-Svc 'h3=":443"; ma=86400';
     ${lib.optionalString (frame != null) "add_header X-Frame-Options ${frame};"}
@@ -320,6 +323,21 @@ in
               default = true;
               description = "Enable OWASP Core Rule Set for this host.";
             };
+            enableCoep = mkOption {
+              type = types.bool;
+              default = true;
+              description = "Enable Cross-Origin-Embedder-Policy: require-corp";
+            };
+            corpPolicy = mkOption {
+              type = types.enum ["same-origin" "same-site" "cross-origin"];
+              default = "same-origin";
+              description = "Set the Cross-Origin-Resource-Policy header.";
+            };
+            coopPolicy = mkOption {
+              type = types.enum ["same-origin" "same-origin-allow-popups" "unsafe-none"];
+              default = "same-origin";
+              description = "Set the Cross-Origin-Opener-Policy header.";
+            };
             dnsProvider = mkOption {
               type = types.nullOr types.str;
               default = null;
@@ -425,7 +443,7 @@ in
                 proxy_set_header Connection $connection_upgrade;
                 proxy_buffering off;
               ''}
-              ${mkSecurityHeaders (mkCsp hostCfg.csp) hostCfg.frame hostCfg.contentType}
+              ${mkSecurityHeaders (mkCsp hostCfg.csp) hostCfg.frame hostCfg.contentType hostCfg.enableCoep hostCfg.corpPolicy hostCfg.coopPolicy}
               ${hostCfg.extraConfig}
             '';
           })

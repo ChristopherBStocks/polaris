@@ -13,7 +13,7 @@
       sha256 = "b23489e54828e5645282aee2d422e85060bba55edc2f802e967ebbe081f741cc";
     };
 
-    phases = [ "installPhase" ];
+    phases = ["installPhase"];
     installPhase = ''
       mkdir -p $out/bin
       cp $src $out/bin/elytra
