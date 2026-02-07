@@ -4,6 +4,22 @@
   pkgs,
   ...
 }: let
+  elytra-bin = pkgs.stdenv.mkDerivation {
+    pname = "elytra";
+    version = "latest";
+
+    src = pkgs.fetchurl {
+      url = "https://github.com/pyrohost/elytra/releases/download/v1.3.0/elytra_linux_amd64";
+      sha256 = "b23489e54828e5645282aee2d422e85060bba55edc2f802e967ebbe081f741cc";
+    };
+
+    phases = [ "installPhase" ];
+    installPhase = ''
+      mkdir -p $out/bin
+      cp $src $out/bin/elytra
+      chmod +x $out/bin/elytra
+    '';
+  };
   cfg = config.polaris.virtualisation.elytra;
 in
   with lib; {
