@@ -10,8 +10,8 @@
     targetIP = rangeConfiguration.targetIP;
     protocol = rangeConfiguration.protocol;
     portSpec = rangeConfiguration.portRange;
-    inIf         = rangeConfiguration.inInterface;
-    outIf        = rangeConfiguration.outInterface;
+    inIf = rangeConfiguration.inInterface;
+    outIf = rangeConfiguration.outInterface;
   in ''
     iptables -t nat -A POLARIS_PREROUTING -i ${inIf} -p ${protocol} --dport ${portSpec} \
       -j DNAT --to-destination ${targetIP}
@@ -46,52 +46,52 @@ in
               default = "tcp";
             };
             inInterface = mkOption {
-                        type = types.str;
-                        example = "ens3";
-                        description = "Ingress interface (public/WAN).";
-                      };
+              type = types.str;
+              example = "ens3";
+              description = "Ingress interface (public/WAN).";
+            };
 
-                      outInterface = mkOption {
-                        type = types.str;
-                        example = "wt-wan";
-                        description = "Egress interface toward the target (e.g. NetBird).";
-                      };
+            outInterface = mkOption {
+              type = types.str;
+              example = "wt-wan";
+              description = "Egress interface toward the target (e.g. NetBird).";
+            };
           };
         });
       };
     };
 
     config = mkIf (cfg.enable && cfg.ranges != []) {
-        boot.kernel.sysctl."net.ipv4.ip_forward" = 1;
-        networking.firewall.enable = true;
-        networking.firewall.extraCommands = ''
-          iptables -t nat -N POLARIS_PREROUTING 2>/dev/null || true
-          iptables -t nat -N POLARIS_POSTROUTING 2>/dev/null || true
-          iptables -N POLARIS_FORWARD 2>/dev/null || true
+      boot.kernel.sysctl."net.ipv4.ip_forward" = 1;
+      networking.firewall.enable = true;
+      networking.firewall.extraCommands = ''
+        iptables -t nat -N POLARIS_PREROUTING 2>/dev/null || true
+        iptables -t nat -N POLARIS_POSTROUTING 2>/dev/null || true
+        iptables -N POLARIS_FORWARD 2>/dev/null || true
 
-          iptables -t nat -F POLARIS_PREROUTING
-          iptables -t nat -F POLARIS_POSTROUTING
-          iptables -F POLARIS_FORWARD
+        iptables -t nat -F POLARIS_PREROUTING
+        iptables -t nat -F POLARIS_POSTROUTING
+        iptables -F POLARIS_FORWARD
 
-          iptables -t nat -C PREROUTING -j POLARIS_PREROUTING 2>/dev/null || iptables -t nat -A PREROUTING -j POLARIS_PREROUTING
-          iptables -t nat -C POSTROUTING -j POLARIS_POSTROUTING 2>/dev/null || iptables -t nat -A POSTROUTING -j POLARIS_POSTROUTING
-          iptables -C FORWARD -j POLARIS_FORWARD 2>/dev/null || iptables -A FORWARD -j POLARIS_FORWARD
+        iptables -t nat -C PREROUTING -j POLARIS_PREROUTING 2>/dev/null || iptables -t nat -A PREROUTING -j POLARIS_PREROUTING
+        iptables -t nat -C POSTROUTING -j POLARIS_POSTROUTING 2>/dev/null || iptables -t nat -A POSTROUTING -j POLARIS_POSTROUTING
+        iptables -C FORWARD -j POLARIS_FORWARD 2>/dev/null || iptables -A FORWARD -j POLARIS_FORWARD
 
-          ${concatMapStringsSep "\n" generateIptables cfg.ranges}
-        '';
+        ${concatMapStringsSep "\n" generateIptables cfg.ranges}
+      '';
 
-        networking.firewall.extraStopCommands = ''
-          iptables -t nat -D PREROUTING -j POLARIS_PREROUTING 2>/dev/null || true
-          iptables -t nat -D POSTROUTING -j POLARIS_POSTROUTING 2>/dev/null || true
-          iptables -D FORWARD -j POLARIS_FORWARD 2>/dev/null || true
+      networking.firewall.extraStopCommands = ''
+        iptables -t nat -D PREROUTING -j POLARIS_PREROUTING 2>/dev/null || true
+        iptables -t nat -D POSTROUTING -j POLARIS_POSTROUTING 2>/dev/null || true
+        iptables -D FORWARD -j POLARIS_FORWARD 2>/dev/null || true
 
-          iptables -t nat -F POLARIS_PREROUTING 2>/dev/null || true
-          iptables -t nat -F POLARIS_POSTROUTING 2>/dev/null || true
-          iptables -F POLARIS_FORWARD 2>/dev/null || true
+        iptables -t nat -F POLARIS_PREROUTING 2>/dev/null || true
+        iptables -t nat -F POLARIS_POSTROUTING 2>/dev/null || true
+        iptables -F POLARIS_FORWARD 2>/dev/null || true
 
-          iptables -t nat -X POLARIS_PREROUTING 2>/dev/null || true
-          iptables -t nat -X POLARIS_POSTROUTING 2>/dev/null || true
-          iptables -X POLARIS_FORWARD 2>/dev/null || true
-        '';
-      };
+        iptables -t nat -X POLARIS_PREROUTING 2>/dev/null || true
+        iptables -t nat -X POLARIS_POSTROUTING 2>/dev/null || true
+        iptables -X POLARIS_FORWARD 2>/dev/null || true
+      '';
+    };
   }
